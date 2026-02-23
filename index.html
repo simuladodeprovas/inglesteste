@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>English Proficiency Test - CEBRASPE Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: #1a3b5d; /* Dark blue */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .quiz-container {
+            width: 100%;
+            max-width: 700px;
+            background: #FFFFFF;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 4px solid #ffcc00; /* Yellow */
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .quiz-title {
+            color: #1a3b5d;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .quiz-subtitle {
+            color: #1a3b5d;
+            font-size: 18px;
+            font-weight: 600;
+            border-top: 2px solid #ffcc00;
+            border-bottom: 2px solid #ffcc00;
+            display: inline-block;
+            padding: 8px 20px;
+            margin-top: 5px;
+        }
+        
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: #e6f0fa;
+            border-radius: 60px;
+            border: 2px solid #ffcc00;
+        }
+        
+        .question-counter {
+            background: #1a3b5d;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 40px;
+            border: 2px solid #ffcc00;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 20px;
+            background: #b0c4de;
+            border-radius: 30px;
+            margin: 0 15px;
+            overflow: hidden;
+            border: 1px solid #ffcc00;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a3b5d, #ffcc00);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 30px;
+        }
+        
+        .category-badge {
+            background: #1a3b5d;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 2px solid #ffcc00;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .timer-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .timer {
+            display: inline-block;
+            background: #1a3b5d;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            padding: 10px 25px;
+            border-radius: 60px;
+            border: 3px solid #ffcc00;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .question-area {
+            background: #f0f5fa;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid #1a3b5d;
+            border-right: 5px solid #ffcc00;
+            box-shadow: 0 5px 15px rgba(26,59,93,0.2);
+        }
+        
+        .question-text {
+            color: #1a3b5d;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: left;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .option-btn-ce {
+            background: white;
+            border: 3px solid #1a3b5d;
+            border-radius: 60px;
+            padding: 18px 40px;
+            color: #1a3b5d;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 150px;
+            box-shadow: 0 4px 6px rgba(26,59,93,0.2);
+        }
+        
+        .option-btn-ce:hover:not(:disabled) {
+            background: #1a3b5d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(26,59,93,0.3);
+        }
+        
+        .option-btn-ce.selected-c {
+            background: #1a3b5d;
+            color: white;
+            border-color: #ffcc00;
+        }
+        
+        .option-btn-ce.selected-e {
+            background: #1a3b5d;
+            color: white;
+            border-color: #ffcc00;
+        }
+        
+        .option-btn-ce.correct-c {
+            background: #2e7d32;
+            border-color: #ffcc00;
+            color: white;
+        }
+        
+        .option-btn-ce.correct-e {
+            background: #2e7d32;
+            border-color: #ffcc00;
+            color: white;
+        }
+        
+        .option-btn-ce.incorrect-c {
+            background: #c62828;
+            border-color: #ffcc00;
+            color: white;
+        }
+        
+        .option-btn-ce.incorrect-e {
+            background: #c62828;
+            border-color: #ffcc00;
+            color: white;
+        }
+        
+        .option-btn-ce:disabled {
+            opacity: 0.9;
+            cursor: default;
+            transform: none;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            border: 4px solid #1a3b5d;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #b0c4de;
+            border-top-color: #1a3b5d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .result-screen {
+            text-align: center;
+        }
+        
+        .final-score {
+            background: linear-gradient(135deg, #1a3b5d, #2b4f7a);
+            border-radius: 25px;
+            padding: 30px;
+            margin: 20px 0;
+            color: white;
+            border: 4px solid #ffcc00;
+        }
+        
+        .score-number {
+            font-size: 70px;
+            font-weight: bold;
+            line-height: 1;
+            margin: 15px 0;
+        }
+        
+        .score-label {
+            font-size: 24px;
+            opacity: 0.9;
+        }
+        
+        .level-result {
+            font-size: 22px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,204,0,0.2);
+            border-radius: 60px;
+            border: 2px solid #ffcc00;
+        }
+        
+        .action-btn {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            color: #1a3b5d;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            box-shadow: 0 4px 10px rgba(26,59,93,0.3);
+            border: 3px solid #ffcc00;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255,204,0,0.5);
+            background: #f0f5fa;
+        }
+        
+        .action-btn.secondary {
+            background: #e6f0fa;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 15px;
+            border: 3px solid #ffcc00;
+            margin: 10px 0;
+            transition: all 0.2s ease;
+            color: #1a3b5d;
+            font-weight: bold;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: #1a3b5d;
+            box-shadow: 0 0 0 3px rgba(255,204,0,0.3);
+        }
+        
+        .name-input::placeholder {
+            color: #95a5a6;
+            font-weight: normal;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e6f0fa;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .stats-correct {
+            color: #2e7d32;
+        }
+        
+        .stats-wrong {
+            color: #c62828;
+        }
+        
+        @media (max-width: 480px) {
+            .quiz-title { font-size: 24px; }
+            .question-text { font-size: 18px; }
+            .option-btn-ce { 
+                font-size: 24px; 
+                padding: 15px 25px;
+                min-width: 120px;
+            }
+            .score-number { font-size: 60px; }
+            .progress-container { 
+                flex-direction: column; 
+                gap: 10px; 
+            }
+            .progress-bar { 
+                width: 100%; 
+                margin: 10px 0; 
+            }
+            .category-badge { 
+                min-width: 100%; 
+            }
+            .options-container {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="quizContent"></div>
+    </div>
+
+    <div id="loading" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div style="font-size: 20px; color: #1a3b5d; font-weight: bold;">Loading questions...</div>
+        </div>
+    </div>
+
+    <script>
+        // LINK FOR MORE PRACTICE
+        const PRACTICE_LINK = "https://s.shopee.com.br/8KkI2EwWex";
+        const RESULTS_LINK = PRACTICE_LINK;
+
+        // ===== 30 ENGLISH QUESTIONS (CEBRASPE STYLE - RIGHT/WRONG) =====
+        const questions = [
+            // GRAMMAR (1-8)
+            {
+                question: "📝 'She don't like coffee.' This sentence is grammatically correct in standard English.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "doesn't"
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'If I was you, I would study more.' This sentence uses the correct verb form.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "were"
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'The book who is on the table is mine.' The use of 'who' is correct here.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "which" or "that"
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'I have been living in New York since 2019.' This sentence is grammatically correct.",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'She suggested me to apply for the job.' This sentence structure is correct.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "suggested that I apply"
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'Neither the teacher nor the students was aware of the change.' The verb agreement is correct.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "were" (closer subject is plural)
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'By the time we arrived, they have already left.' The verb tense is correct.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - should be "had already left"
+                category: "GRAMMAR"
+            },
+            {
+                question: "📝 'Every student must bring their own book.' This use of 'their' is now widely accepted.",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT (singular they is accepted)
+                category: "GRAMMAR"
+            },
+            
+            // VOCABULARY (9-14)
+            {
+                question: "📚 'The word 'bizarre' means the same as 'common' or 'ordinary'.",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - bizarre means strange
+                category: "VOCABULARY"
+            },
+            {
+                question: "📚 'To 'postpone' means to cancel something completely.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - postpone means to delay
+                category: "VOCABULARY"
+            },
+            {
+                question: "📚 'The words 'affect' and 'effect' can be used interchangeably.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - affect is verb, effect is noun
+                category: "VOCABULARY"
+            },
+            {
+                question: "📚 'The prefix 'un-' in 'unhappy' means 'not'.",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "VOCABULARY"
+            },
+            {
+                question: "📚 'The word 'literally' is always used to mean figuratively.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - literally means exactly, not figuratively
+                category: "VOCABULARY"
+            },
+            {
+                question: "📚 'A 'beverage' is a type of food.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - beverage is a drink
+                category: "VOCABULARY"
+            },
+            
+            // READING COMPREHENSION (15-20)
+            {
+                question: "📖 'Text: 'The Amazon rainforest produces about 20% of the world's oxygen.' According to the text, the Amazon produces most of the world's oxygen.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - it says 20%, not most
+                category: "READING"
+            },
+            {
+                question: "📖 'Text: 'Climate change is one of the most pressing issues of our time.' This means climate change is not important.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - "pressing" means urgent/important
+                category: "READING"
+            },
+            {
+                question: "📖 'Text: 'The company's profits increased by 50% in the last quarter.' This means profits are now 50% higher than before.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "READING"
+            },
+            {
+                question: "📖 'Text: 'Despite the rain, they decided to go for a walk.' This means they didn't go for a walk.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - "despite" means they went anyway
+                category: "READING"
+            },
+            {
+                question: "📖 'Text: 'She is fluent in three languages: English, Spanish, and French.' This means she can speak three languages well.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "READING"
+            },
+            {
+                question: "📖 'Text: 'The meeting was postponed until further notice.' This means the meeting will happen tomorrow.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - no specific date given
+                category: "READING"
+            },
+            
+            // IDIOMS AND EXPRESSIONS (21-25)
+            {
+                question: "🗣️ 'The idiom 'break a leg' is used to wish someone good luck.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "IDIOMS"
+            },
+            {
+                question: "🗣️ 'To 'hit the books' means to destroy books.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - it means to study hard
+                category: "IDIOMS"
+            },
+            {
+                question: "🗣️ 'When someone says 'it's raining cats and dogs', they mean it's raining very hard.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "IDIOMS"
+            },
+            {
+                question: "🗣️ 'To 'spill the beans' means to clean up a mess.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - it means to reveal a secret
+                category: "IDIOMS"
+            },
+            {
+                question: "🗣️ 'The expression 'piece of cake' means something is difficult.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - it means something is easy
+                category: "IDIOMS"
+            },
+            
+            // PRONUNCIATION (26-30)
+            {
+                question: "🔊 'The words 'though' and 'through' are pronounced the same way.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - different pronunciations
+                category: "PRONUNCIATION"
+            },
+            {
+                question: "🔊 'In 'interesting', the first 'e' is often not pronounced in casual speech.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT (often pronounced "int-resting")
+                category: "PRONUNCIATION"
+            },
+            {
+                question: "🔊 'The 'b' in 'subtle' is silent.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 1, // RIGHT
+                category: "PRONUNCIATION"
+            },
+            {
+                question: "🔊 'The words 'advice' (noun) and 'advise' (verb) are pronounced the same.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - advice (s sound) / advise (z sound)
+                category: "PRONUNCIATION"
+            },
+            {
+                question: "🔊 'In 'schedule', Americans and British people pronounce it the same way.'",
+                options: ["RIGHT", "WRONG"],
+                answer: 2, // WRONG - US: skedjool / UK: shedjool
+                category: "PRONUNCIATION"
+            }
+        ];
+
+        const TOTAL_QUESTIONS = questions.length;
+        let current = 0;
+        let score = 0;
+        let answered = false;
+        let userAnswers = [];
+        let timer;
+        let timeLeft = 60;
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 60;
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        userAnswers.push(0);
+                        nextQuestion();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerEl = document.getElementById('timer');
+            if (timerEl) timerEl.textContent = `⏳ ${timeLeft}s`;
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = questions[current];
+            
+            let html = `
+                <div class="quiz-header">
+                    <div class="quiz-title">ENGLISH PROFICIENCY TEST</div>
+                    <div class="quiz-subtitle">CEBRASPE STYLE (RIGHT/WRONG)</div>
+                    
+                    <div class="progress-container">
+                        <div class="question-counter">${current + 1}/${TOTAL_QUESTIONS}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${((current + 1) / TOTAL_QUESTIONS) * 100}%"></div>
+                        </div>
+                        <div class="category-badge">${q.category}</div>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div class="timer" id="timer">⏳ 60s</div>
+                    </div>
+                </div>
+                
+                <div class="question-area">
+                    <div class="question-text">${q.question}</div>
+                </div>
+                
+                <div class="options-container" id="optionsContainer">
+                    <button class="option-btn-ce" onclick="selectOption(1)" id="btn-c">C - RIGHT</button>
+                    <button class="option-btn-ce" onclick="selectOption(2)" id="btn-e">E - WRONG</button>
+                </div>
+            `;
+            
+            document.getElementById('quizContent').innerHTML = html;
+            startTimer();
+        }
+
+        function selectOption(selected) {
+            if (answered) return;
+            answered = true;
+            clearInterval(timer);
+            
+            const correct = questions[current].answer;
+            const btnC = document.getElementById('btn-c');
+            const btnE = document.getElementById('btn-e');
+            
+            btnC.classList.remove('selected-c', 'correct-c', 'incorrect-c');
+            btnE.classList.remove('selected-e', 'correct-e', 'incorrect-e');
+            
+            if (selected === 1) {
+                btnC.classList.add('selected-c');
+            } else {
+                btnE.classList.add('selected-e');
+            }
+            
+            setTimeout(() => {
+                if (correct === 1) {
+                    btnC.classList.add('correct-c');
+                    if (selected !== 1) btnE.classList.add('incorrect-e');
+                } else {
+                    btnE.classList.add('correct-e');
+                    if (selected !== 2) btnC.classList.add('incorrect-c');
+                }
+                
+                btnC.disabled = true;
+                btnE.disabled = true;
+                
+                userAnswers.push(selected);
+                if (selected === correct) {
+                    score++;
+                    if (typeof confetti !== 'undefined') {
+                        confetti({
+                            particleCount: 20,
+                            spread: 40,
+                            colors: ['#1a3b5d', '#ffcc00']
+                        });
+                    }
+                }
+                
+                setTimeout(nextQuestion, 800);
+            }, 300);
+        }
+
+        function nextQuestion() {
+            current++;
+            if (current < questions.length) {
+                showQuestion();
+            } else {
+                showFinalScreen();
+            }
+        }
+
+        function showFinalScreen() {
+            let levelMessage = "";
+            let levelEmoji = "";
+            
+            if (score >= 25) {
+                levelMessage = "ADVANCED - Excellent proficiency! 🌟";
+                levelEmoji = "🏆";
+                if (typeof confetti !== 'undefined') {
+                    confetti({ particleCount: 200, spread: 120, colors: ['#1a3b5d', '#ffcc00'] });
+                }
+            } else if (score >= 20) {
+                levelMessage = "INTERMEDIATE - Very good! 👍";
+                levelEmoji = "📚";
+                if (typeof confetti !== 'undefined') {
+                    confetti({ particleCount: 100, spread: 80, colors: ['#ffcc00'] });
+                }
+            } else if (score >= 15) {
+                levelMessage = "BASIC - Good performance! 💪";
+                levelEmoji = "📝";
+            } else {
+                levelMessage = "BEGINNER - Keep practicing! 📖";
+                levelEmoji = "📖";
+            }
+            
+            let acertos = score;
+            let erros = TOTAL_QUESTIONS - score;
+            
+            let html = `
+                <div class="quiz-header">
+                    <div class="quiz-title">ENGLISH PROFICIENCY TEST</div>
+                    <div class="quiz-subtitle">FINAL RESULT</div>
+                </div>
+                
+                <div class="result-screen">
+                    <div class="final-score">
+                        <div class="score-label">Your Score</div>
+                        <div class="score-number">${acertos}/${TOTAL_QUESTIONS}</div>
+                        <div class="stats-container">
+                            <span class="stats-correct">✅ ${acertos} correct</span>
+                            <span class="stats-wrong">❌ ${erros} incorrect</span>
+                        </div>
+                        <div class="level-result">${levelEmoji} ${levelMessage}</div>
+                    </div>
+                    
+                    <button class="action-btn" onclick="redirectToResults()">
+                        🔗 VIEW FULL ANSWER KEY
+                    </button>
+                    
+                    <button class="action-btn secondary" onclick="redirectToPractice()">
+                        🚀 MORE PRACTICE
+                    </button>
+                    
+                    <input type="text" class="name-input" id="participantName" 
+                           placeholder="Enter your name">
+                    <button class="action-btn secondary" onclick="sendResults()">
+                        💾 SAVE RESULT
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('quizContent').innerHTML = html;
+        }
+
+        function redirectToResults() {
+            window.open(RESULTS_LINK, '_blank');
+        }
+
+        function redirectToPractice() {
+            window.open(PRACTICE_LINK, '_blank');
+        }
+
+        function sendResults() {
+            const name = document.getElementById('participantName')?.value.trim();
+            if (!name) {
+                alert('Please enter your name!');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'flex';
+            
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                alert(`Congratulations ${name}! You scored ${score}/${TOTAL_QUESTIONS}.`);
+            }, 1000);
+        }
+
+        function loadConfettiAndStart() {
+            if (typeof confetti === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+                script.onload = function() {
+                    showQuestion();
+                };
+                document.head.appendChild(script);
+            } else {
+                showQuestion();
+            }
+        }
+
+        loadConfettiAndStart();
+    </script>
+</body>
+</html>
